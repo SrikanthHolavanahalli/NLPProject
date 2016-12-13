@@ -11,19 +11,22 @@ from nltk.stem.wordnet import WordNetLemmatizer
 
 cachedStopWords = stopwords.words("english")
 lmtzr = WordNetLemmatizer()
-all_data = []  
+all_data = []
+sentenceId = {}
 DataDoc= namedtuple('DataDoc', 'tag words')
-with open('Tweets.csv') as alldata:
-    for line_no, line in enumerate(alldata):
-        label=line.split()[0]
-        word_list=line.lower().split()[1:]
-        all_data.append(DataDoc(label, word_list))
-train_data = all_data[:25000]
-test_data = all_data[25000:50000]
+with open('train.tsv') as alldata:
+    for line in alldata:
+        if  line.split()[2] not in sentenceId:
+            label=line.split()[-1]
+            word_list=line.lower().split()[2:-2]
+            all_data.append(DataDoc(label, word_list))
+            sentenceId[line.split()[2]] = 'true'
+train_data = all_data[:500]
+test_data = all_data[500:1000]
 #print (len(train_data))
 
-train_data=train_data[:1000]+train_data[12500:13500]
-test_data=test_data[2000:3000]+test_data[25000:26000]
+#train_data=train_data[:1000]+train_data[12500:13500]
+#test_data=test_data[2000:3000]+test_data[25000:26000]
 #print (len(train_data))
 #print (len(test_data))
 
@@ -53,8 +56,8 @@ def get_sparse_vec(data_point, space):
 train_vecs= [get_sparse_vec(data_point, word_space) for data_point in train_data]
 test_vecs= [get_sparse_vec(data_point, word_space) for data_point in test_data]
 
-train_tags=[ 1.0 for i in range(1000)] + [ 0.0 for i in range(1000)]
-test_tags=[ 1.0 for i in range(1000)] + [ 0.0 for i in range(1000)]
+train_tags=[ 1.0 for i in range(250)] + [ 0.0 for i in range(250)]
+test_tags=[ 1.0 for i in range(250)] + [ 0.0 for i in range(250)]
 
 train_vecs=np.array(train_vecs)
 train_tags=np.array(train_tags)

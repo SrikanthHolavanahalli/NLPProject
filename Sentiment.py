@@ -22,6 +22,7 @@ train_tags = []
 sentenceId = {}
 d =enchant.Dict("en_US")
 ipStr = ""
+predictFlag = 0
 if(len(sys.argv) < 3):
     print("Usage: python3 sentiment.py classifier model [optional text]")
     sys.exit(-1)
@@ -30,6 +31,8 @@ elif(len(sys.argv) > 3):
     for ip in sys.argv[3:]:
         ipStr += ip + " "
     print(ipStr)
+    predictFlag = 1
+
 classifier = sys.argv[1]
 feature_model = sys.argv[2]
 
@@ -108,6 +111,9 @@ else:
 
 clf.fit(train_vecs, train_tags)
 print ("\nDone fitting classifier on training data...\n")
+
+if(predictFlag == 1):
+    print(clf.predict(np.array(sys.argv[3:])))
 
 #------------------------------------------------------------------------------------------
 print ("="*50, "\n")

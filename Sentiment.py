@@ -1,12 +1,17 @@
 from collections import namedtuple
 import numpy as np
 from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import MultinomialNB, GaussianNB
+from sklearn.neural_network import MLPClassifier
 from sklearn import metrics
 from collections import defaultdict
 
 from sklearn import cross_validation
 from nltk.corpus import stopwords
 import enchant
+
+import sys
 
 from nltk.stem.wordnet import WordNetLemmatizer
 
@@ -16,6 +21,18 @@ all_data = []
 train_tags = []
 sentenceId = {}
 d =enchant.Dict("en_US")
+ipStr = ""
+if(len(sys.argv) < 3):
+    print("Usage: python3 sentiment.py classifier model [optional text]")
+    sys.exit(-1)
+elif(len(sys.argv) > 3):
+    inputStr = sys.argv[3:]
+    for ip in sys.argv[3:]:
+        ipStr += ip + " "
+    print(ipStr)
+classifier = sys.argv[1]
+feature_model = sys.argv[2]
+
 
 DataDoc= namedtuple('DataDoc', 'tag words')
 with open('train.tsv') as alldata:
@@ -73,15 +90,22 @@ train_vecs=np.array(train_vecs)
 train_tags=np.array(train_tags[:500])
 #print (train_vecs.shape)
 
-n_jobs = 2
 
-#train_vecs=np.array(train_vecs)
-#train_tags=np.array(train_tags)
+print("model" + " " +sys.argv[2])
+print("classifier " + sys.argv[1])
 
-#the clf variable is changed from SVC to NNET, Naive Bayes, KNN in line 84 and the code was ran once for every algorithm and parameter
-print (type(train_tags))
-print (type(train_vecs))
-clf = SVC(C=1, kernel = 'linear', gamma=1, verbose= False, probability=False)
+if(classifier == 'svm'):
+    clf = SVC(C=1, kernel = 'linear', gamma=1, verbose= False, probability=False)
+elif(classifier == 'knn'):
+    clf = KNeighborsClassifier(n_neighbors=5)
+elif(classifier == 'nb'):
+    clf = MultinomialNB()
+elif(classifier == 'nnet'):
+    clf = MLPClassifier(solver='lbfgs',alpha=1e-5,hidden_layer_sizes=(5,2),random_state=1)
+else:
+    print("invalid classifier")
+    sys.exit(-1)
+
 clf.fit(train_vecs, train_tags)
 print ("\nDone fitting classifier on training data...\n")
 

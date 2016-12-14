@@ -12,7 +12,8 @@ from nltk.corpus import stopwords
 import enchant
 
 import sys
-
+import re
+from collections import Counter
 from nltk.stem.wordnet import WordNetLemmatizer
 
 cachedStopWords = stopwords.words("english")
@@ -23,6 +24,49 @@ sentenceId = {}
 d =enchant.Dict("en_US")
 ipStr = ""
 predictFlag = 0
+
+
+################################### spell correcter functions ###############################
+def words(text): return re.findall(r'\w+', text.lower())
+
+WORDS = Counter(words(open('big.txt').read()))
+
+def P(word, N=sum(WORDS.values())):
+    "Probability of `word`."
+    return WORDS[word] / N
+
+def correction(word):
+    "Most probable spelling correction for word."
+    return max(candidates(word), key=P)
+
+def candidates(word):
+    "Generate possible spelling corrections for word."
+    return (known([word]) or known(edits1(word)) or known(edits2(word)) or [word])
+
+def known(words):
+    "The subset of `words` that appear in the dictionary of WORDS."
+    return set(w for w in words if w in WORDS)
+
+def edits1(word):
+    "All edits that are one edit away from `word`."
+    letters    = 'abcdefghijklmnopqrstuvwxyz'
+    splits     = [(word[:i], word[i:])    for i in range(len(word) + 1)]
+    deletes    = [L + R[1:]               for L, R in splits if R]
+    transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
+    replaces   = [L + c + R[1:]           for L, R in splits if R for c in letters]
+    inserts    = [L + c + R               for L, R in splits for c in letters]
+    return set(deletes + transposes + replaces + inserts)
+
+def edits2(word):
+    "All edits that are two edits away from `word`."
+    return (e2 for e1 in edits1(word) for e2 in edits1(e1))
+
+############################################################################################################
+
+
+
+##### CLI input checker ###########
+
 if(len(sys.argv) < 3):
     print("Usage: python3 sentiment.py classifier model [optional text]")
     sys.exit(-1)
@@ -36,6 +80,10 @@ elif(len(sys.argv) > 3):
 classifier = sys.argv[1]
 feature_model = sys.argv[2]
 
+#######################################
+
+
+##### reading movie reviews ###################
 
 DataDoc= namedtuple('DataDoc', 'tag words')
 with open('train.tsv') as alldata:
@@ -48,13 +96,12 @@ with open('train.tsv') as alldata:
             all_data.append(DataDoc(label, word_list))
             sentenceId[sentId] = 'true'
 train_data = all_data[:500]
-#test_data = all_data[500:1000]
-#print (len(train_data))
 
-#train_data=train_data[:1000]+train_data[12500:13500]
-#test_data=test_data[2000:3000]+test_data[25000:26000]
-#print (len(train_data))
-#print (len(test_data))
+###############################################################
+
+
+
+###### building workspace ( unique words )  #######
 
 def get_space(train_data):
     word_space=defaultdict(int)
@@ -63,13 +110,22 @@ def get_space(train_data):
             if w not in cachedStopWords:
                 w = lmtzr.lemmatize(w)
                 #print(type(d.check(w)))
+
                 if(d.check(w) == True):
                     word_space[w]=len(word_space)
+                else:
+                    w = correction(w)
+                    word_space[w] = len(word_space)
     return word_space
 
 word_space=get_space(train_data)
 print (len(word_space))
-x = 1
+
+#####################################################
+
+
+
+###########  Unigram model  ###################
 
 def get_sparse_vec(data_point, space):
     # create empty vector
@@ -80,20 +136,23 @@ def get_sparse_vec(data_point, space):
                 w = lmtzr.lemmatize(w)
                 if (d.check(w) == True):
                     sparse_vec[space[w]]=1
+                else:
+                    w = correction(w)
+                    word_space[w] = len(word_space)
         except:
             continue
     return sparse_vec
 train_vecs= [get_sparse_vec(data_point, word_space) for data_point in train_data]
-#test_vecs= [get_sparse_vec(data_point, word_space) for data_point in test_data]
 
-#train_tags=[ 1.0 for i in range(250)] + [ 0.0 for i in range(250)]
-#test_tags=[ 1.0 for i in range(250)] + [ 0.0 for i in range(250)]
+###################################################
 
 train_vecs=np.array(train_vecs)
 train_tags=np.array(train_tags[:500])
-#print (train_vecs.shape)
 
 
+
+
+#################### classifiers ############################
 print("model" + " " +sys.argv[2])
 print("classifier " + sys.argv[1])
 
@@ -112,8 +171,15 @@ else:
 clf.fit(train_vecs, train_tags)
 print ("\nDone fitting classifier on training data...\n")
 
+###############################################################
+
+
 if(predictFlag == 1):
     print(clf.predict(np.array(sys.argv[3:])))
+
+
+########### post classification analysis ############################
+
 
 #------------------------------------------------------------------------------------------
 print ("="*50, "\n")
@@ -128,3 +194,6 @@ print ("precision_score\t", metrics.precision_score(train_tags, predicted,averag
 print ("recall_score\t", metrics.recall_score(train_tags, predicted,average='macro'))
 print ("\nclassification_report:\n\n", metrics.classification_report(train_tags, predicted))
 print ("\nconfusion_matrix:\n\n", metrics.confusion_matrix(train_tags, predicted))
+
+
+###########################################################################

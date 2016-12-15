@@ -1,0 +1,156 @@
+2661
+2694
+model uni
+classifier svm
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.27
+********************
+precision_score	 0.247050666085
+recall_score	 0.243122199438
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.16      0.10      0.12        60
+          1       0.33      0.41      0.36       133
+          2       0.22      0.25      0.23       104
+          3       0.29      0.28      0.29       126
+          4       0.23      0.18      0.20        77
+
+avg / total       0.26      0.27      0.26       500
+
+
+confusion_matrix:
+
+ [[ 6 27 12 10  5]
+ [15 54 35 20  9]
+ [ 5 33 26 31  9]
+ [ 8 33 27 35 23]
+ [ 3 19 18 23 14]]
+2660
+2694
+model bi
+classifier svm
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.26
+********************
+precision_score	 0.168898650369
+recall_score	 0.201408328514
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.18      0.03      0.06        60
+          1       0.28      0.85      0.42       133
+          2       0.09      0.03      0.04       104
+          3       0.30      0.10      0.14       126
+          4       0.00      0.00      0.00        77
+
+avg / total       0.19      0.26      0.16       500
+
+
+confusion_matrix:
+
+ [[  2  46   8   3   1]
+ [  1 113   8   9   2]
+ [  5  83   3  11   2]
+ [  1 101  11  12   1]
+ [  2  65   5   5   0]]
+2660
+2694
+model uni
+classifier nnet
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.246
+********************
+precision_score	 0.21662949541
+recall_score	 0.218541108015
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.00      0.00      0.00        60
+          1       0.32      0.32      0.32       133
+          2       0.21      0.42      0.28       104
+          3       0.20      0.19      0.20       126
+          4       0.34      0.16      0.21        77
+
+avg / total       0.23      0.25      0.23       500
+
+
+confusion_matrix:
+
+ [[ 0 19 29  9  3]
+ [ 3 43 45 37  5]
+ [ 0 25 44 30  5]
+ [ 4 30 58 24 10]
+ [ 1 16 30 18 12]]
+2660
+2694
+model bi
+classifier nnet
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.194
+********************
+precision_score	 0.186105179338
+recall_score	 0.183446787131
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.09      0.18      0.12        60
+          1       0.25      0.17      0.20       133
+          2       0.20      0.12      0.15       104
+          3       0.29      0.35      0.31       126
+          4       0.10      0.10      0.10        77
+
+avg / total       0.21      0.19      0.19       500
+
+
+confusion_matrix:
+
+ [[11 11 10 17 11]
+ [32 22 13 38 28]
+ [29 20 12 30 13]
+ [28 22 14 44 18]
+ [20 14 10 25  8]]

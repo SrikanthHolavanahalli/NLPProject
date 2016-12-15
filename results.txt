@@ -154,3 +154,159 @@ confusion_matrix:
  [29 20 12 30 13]
  [28 22 14 44 18]
  [20 14 10 25  8]]
+2659
+2694
+model uni
+classifier nb
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.26
+********************
+precision_score	 0.220735899209
+recall_score	 0.215420339894
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.20      0.03      0.06        60
+          1       0.30      0.47      0.37       133
+          2       0.20      0.16      0.18       104
+          3       0.27      0.35      0.30       126
+          4       0.12      0.06      0.09        77
+
+avg / total       0.23      0.26      0.23       500
+
+
+confusion_matrix:
+
+ [[ 2 27 10 16  5]
+ [ 5 62 24 36  6]
+ [ 0 50 17 32  5]
+ [ 2 40 21 44 19]
+ [ 1 25 11 35  5]]
+2660
+2694
+model bi
+classifier nb
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.232
+********************
+precision_score	 0.187324608
+recall_score	 0.194976894451
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.13      0.03      0.05        60
+          1       0.30      0.61      0.40       133
+          2       0.19      0.17      0.18       104
+          3       0.23      0.06      0.09       126
+          4       0.09      0.10      0.10        77
+
+avg / total       0.21      0.23      0.19       500
+
+
+confusion_matrix:
+
+ [[ 2 23 17  3 15]
+ [ 1 81 27  5 19]
+ [ 4 57 18 10 15]
+ [ 4 64 22  7 29]
+ [ 4 46 13  6  8]]
+2661
+2694
+model uni
+classifier knn
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.208
+********************
+precision_score	 0.179337761475
+recall_score	 0.192523821208
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.09      0.02      0.03        60
+          1       0.26      0.17      0.20       133
+          2       0.20      0.76      0.32       104
+          3       0.14      0.01      0.02       126
+          4       0.20      0.01      0.02        77
+
+avg / total       0.19      0.21      0.13       500
+
+
+confusion_matrix:
+
+ [[  1  13  45   1   0]
+ [  5  22 103   2   1]
+ [  2  21  79   1   1]
+ [  1  18 104   1   2]
+ [  2  10  62   2   1]]
+2660
+2694
+model bi
+classifier knn
+
+Done fitting classifier on training data...
+
+================================================== 
+
+Results with 5-fold cross validation:
+
+================================================== 
+
+********************
+	 accuracy_score	 0.264
+********************
+precision_score	 0.20120562636
+recall_score	 0.208245292719
+
+classification_report:
+
+              precision    recall  f1-score   support
+
+          0       0.29      0.07      0.11        60
+          1       0.27      0.89      0.41       133
+          2       0.28      0.05      0.08       104
+          3       0.17      0.03      0.05       126
+          4       0.00      0.00      0.00        77
+
+avg / total       0.21      0.26      0.15       500
+
+
+confusion_matrix:
+
+ [[  4  54   1   1   0]
+ [  3 119   6   4   1]
+ [  5  88   5   5   1]
+ [  1 117   4   4   0]
+ [  1  65   2   9   0]]

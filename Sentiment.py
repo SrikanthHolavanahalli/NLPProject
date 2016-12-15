@@ -95,8 +95,8 @@ with open('train.tsv') as alldata:
             all_data.append(DataDoc(label, word_list))
             data_bigrams.append(BiDoc(label, bigram_list))
             sentenceId[sentId] = 'true'
-train_data = all_data
-train_bi_data = data_bigrams
+train_data = all_data[:100] + all_data[1000:1100] + all_data[2000:2100] + all_data[3000:3100] + all_data[4000:4100]
+train_bi_data = data_bigrams[:100] + data_bigrams[1000:1100] + data_bigrams[2000:2100] + data_bigrams[3000:3100] + data_bigrams[4000:4100]
 ################################################
 
 
@@ -193,7 +193,7 @@ else:
     print("Invalid feature model")
     sys.exit(-1)
 
-train_tags=np.array(train_tags)
+train_tags=np.array(train_tags[:100] + train_tags[1000:1100] + train_tags[2000:2100] + train_tags[3000:3100] + train_tags[4000:4100])
 ##########################################################################################
 
 

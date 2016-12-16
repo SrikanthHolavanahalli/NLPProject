@@ -1,3 +1,0 @@
-# NLPProject
-
-Sentiment Analyser

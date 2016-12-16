@@ -1,4 +1,4 @@
-model bi
+model hybrid
 classifier svm
 
 Done fitting classifier on training data...
@@ -35,7 +35,7 @@ confusion_matrix:
  [  0 104   0   0   0]
  [  0 126   0   0   0]
  [  0  77   0   0   0]]
-model bi
+model hybrid
 classifier nnet
 
 Done fitting classifier on training data...
@@ -72,7 +72,7 @@ confusion_matrix:
  [  0 104   0   0   0]
  [  0 126   0   0   0]
  [  0  77   0   0   0]]
-model bi
+model hybrid
 classifier nb
 
 Done fitting classifier on training data...
@@ -109,7 +109,7 @@ confusion_matrix:
  [  0 104   0   0   0]
  [  0 126   0   0   0]
  [  0  77   0   0   0]]
-model bi
+model hybrid
 classifier knn
 
 Done fitting classifier on training data...

@@ -302,3 +302,15 @@ confusion_matrix:
  [  5  88   5   5   1]
  [  1 117   4   4   0]
  [  1  65   2   9   0]]
+2661
+2694
+Invalid feature model
+2661
+2694
+Invalid feature model
+2659
+2694
+Invalid feature model
+2660
+2694
+Invalid feature model

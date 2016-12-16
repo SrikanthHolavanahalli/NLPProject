@@ -19,6 +19,7 @@ cachedStopWords = stopwords.words("english")
 lmtzr = WordNetLemmatizer()
 all_data = []
 data_bigrams =[]
+data_trigrams =[]
 train_tags = []
 sentenceId = {}
 d =enchant.Dict("en_US")
@@ -84,6 +85,7 @@ feature_model = sys.argv[2]
 ##### reading movie reviews ###################
 DataDoc= namedtuple('DataDoc', 'tag words')
 BiDoc= namedtuple('BiDoc', 'tag bigrams')
+TriDoc= namedtuple('TriDoc', 'tag trigrams')
 with open('train.tsv') as alldata:
     for line in alldata:
         sentId = line.split()[1]
@@ -92,11 +94,14 @@ with open('train.tsv') as alldata:
             train_tags.append(label)
             word_list=line.lower().split()[2:-2]
             bigram_list = list(nltk.ngrams(word_list, 2))
+            trigram_list = list(nltk.ngrams(word_list, 3))
             all_data.append(DataDoc(label, word_list))
             data_bigrams.append(BiDoc(label, bigram_list))
+            data_trigrams.append(TriDoc(label, trigram_list))
             sentenceId[sentId] = 'true'
 train_data = all_data[:100] + all_data[1000:1100] + all_data[2000:2100] + all_data[3000:3100] + all_data[4000:4100]
 train_bi_data = data_bigrams[:100] + data_bigrams[1000:1100] + data_bigrams[2000:2100] + data_bigrams[3000:3100] + data_bigrams[4000:4100]
+train_tri_data = data_trigrams[:100] + data_trigrams[1000:1100] + data_trigrams[2000:2100] + data_trigrams[3000:3100] + data_trigrams[4000:4100]
 ################################################
 
 
@@ -107,18 +112,16 @@ def get_space(train_data):
     for doc in train_data:
         for w in doc.words:
             if w not in cachedStopWords:
+                if (d.check(w) != True):
+                    w = correction(w)
                 w = lmtzr.lemmatize(w)
                 #print(type(d.check(w)))
+                word_space[w] = len(word_space)
 
-                if(d.check(w) == True):
-                    word_space[w]=len(word_space)
-                else:
-                    w = correction(w)
-                    word_space[w] = len(word_space)
     return word_space
 
 word_space=get_space(train_data)
-print (len(word_space))
+#print (len(word_space))
 #####################################################
 
 
@@ -128,17 +131,58 @@ def get_bi_space(train_bi_data):
     for doc in train_bi_data:
         for pairs in doc.bigrams:
             if pairs[0] not in cachedStopWords and pairs[1] not in cachedStopWords:
-                w0 = lmtzr.lemmatize(pairs[0])
-                w1 = lmtzr.lemmatize(pairs[1])
-                #print(type(d.check(w)))
-                '''if(d.check(w) == True):
-                    word_space[w]=len(word_space)'''
+
+                new_pairs = list(pairs)
+
+                if (d.check(pairs[0]) != True):
+                    new_pairs[0] = correction(pairs[0])
+
+                if (d.check(pairs[1]) != True):
+                    new_pairs[1] = correction(pairs[1])
+
+
+                w0 = lmtzr.lemmatize(new_pairs[0])
+                w1 = lmtzr.lemmatize(new_pairs[1])
+
                 w = w0 + ','+ w1
                 bigram_space[w]=len(bigram_space)
     return bigram_space
 
 bigram_space=get_bi_space(train_bi_data)
-print (len(bigram_space))
+#print (len(bigram_space))
+##################################################################################
+
+############## building workspace (tri gram) #####################################
+def get_tri_space(train_tri_data):
+    trigram_space=defaultdict(int)
+    for doc in train_tri_data:
+        for triplets in doc.trigrams:
+            if triplets[0] not in cachedStopWords and triplets[1] not in cachedStopWords and triplets[2] not in cachedStopWords:
+
+                new_triplets = list(triplets)
+
+                if (d.check(triplets[0]) != True):
+                    new_triplets[0] = correction(triplets[0])
+
+                if (d.check(triplets[1]) != True):
+                    new_triplets[1] = correction(triplets[1])
+
+                if (d.check(triplets[2]) != True):
+                    new_triplets[2] = correction(triplets[2])
+
+                w0 = lmtzr.lemmatize(new_triplets[0])
+                w1 = lmtzr.lemmatize(new_triplets[1])
+                w2 = lmtzr.lemmatize(new_triplets[2])
+
+
+
+
+                w = w0 + ','+ w1 + ','+ w2
+                trigram_space[w]=len(trigram_space)
+    return trigram_space
+
+trigram_space=get_tri_space(train_tri_data)
+#print (len(trigram_space))
 ##################################################################################
 
 
@@ -149,12 +193,11 @@ def get_sparse_vec(data_point, space):
     for w in set(data_point.words):
         try:
             if w not in cachedStopWords:
-                w = lmtzr.lemmatize(w)
-                if (d.check(w) == True):
-                    sparse_vec[space[w]]=1
-                else:
+                if (d.check(w) != True):
                     w = correction(w)
-                    word_space[w] = len(word_space)
+                w = lmtzr.lemmatize(w)
+                #print(type(d.check(w)))
+                word_space[w] = len(word_space)
         except:
             continue
     return sparse_vec
@@ -169,15 +212,57 @@ def get_bigram_vec(data_point, space):
     for pairs in set(data_point.bigrams):
         try:
             if pairs[0] not in cachedStopWords and pairs[1] not in cachedStopWords:
-                w0 = lmtzr.lemmatize(pairs[0])
-                w1 = lmtzr.lemmatize(pairs[1])
-                w = w0 + ','+ w1
-                '''if (d.check(w) == True):
-                    sparse_vec[space[w]]=1'''
-                bigram_vec[space[w]]=1 #is the order of bigram important
+
+                new_pairs_list = list[pairs]
+
+
+                if (d.check(pairs[0]) != True):
+                    new_pairs_list[0] = correction(pairs[0])
+
+                if (d.check(pairs[1]) != True):
+                    new_pairs_list[1] = correction(pairs[1])
+
+                w0 = lmtzr.lemmatize(new_pairs_list[0])
+                w1 = lmtzr.lemmatize(new_pairs_list[1])
+
+                w = w0 + ',' + w1
+                bigram_space[w] = len(bigram_space)
         except:
             continue
     return bigram_vec
+##############################################################################
+
+########### Trigram Model #####################################################
+def get_trigram_vec(data_point, space):
+    # create empty vector
+    trigram_vec = np.zeros((len(space)))
+    for triplets in set(data_point.trigrams):
+        try:
+            if triplets[0] not in cachedStopWords and triplets[1] not in cachedStopWords and triplets[2] not in cachedStopWords:
+
+                new_triplets = list(triplets)
+
+                if (d.check(triplets[0]) != True):
+                    new_triplets[0] = correction(triplets[0])
+
+                if (d.check(triplets[1]) != True):
+                    new_triplets[1] = correction(triplets[1])
+
+                if (d.check(triplets[2]) != True):
+                    new_triplets[2] = correction(triplets[2])
+
+                w0 = lmtzr.lemmatize(new_triplets[0])
+                w1 = lmtzr.lemmatize(new_triplets[1])
+                w2 = lmtzr.lemmatize(new_triplets[2])
+
+
+
+
+                w = w0 + ','+ w1 + ','+ w2
+                trigram_space[w]=len(trigram_space)
+        except:
+            continue
+    return trigram_vec
 ##############################################################################
 
 
@@ -189,6 +274,16 @@ if feature_model == 'uni':
 elif feature_model == 'bi':
     train_bi_vecs = [get_bigram_vec(data_point, bigram_space) for data_point in train_bi_data]
     train_vecs = np.array(train_bi_vecs)
+elif feature_model == 'hybrid':
+    train_vecs = [get_sparse_vec(data_point, word_space) for data_point in train_data]
+    train_bi_vecs = [get_bigram_vec(data_point, bigram_space) for data_point in train_bi_data]
+    train_vecs = np.column_stack((train_vecs,train_bi_vecs))
+elif feature_model == 'hybrid2':
+    train_vecs = [get_sparse_vec(data_point, word_space) for data_point in train_data]
+    train_bi_vecs = [get_bigram_vec(data_point, bigram_space) for data_point in train_bi_data]
+    train_tri_vecs = [get_trigram_vec(data_point, trigram_space) for data_point in train_tri_data]
+    train_vecs = np.column_stack((train_vecs,train_bi_vecs))
+    train_vecs = np.column_stack((train_vecs,train_tri_vecs)) 
 else:
     print("Invalid feature model")
     sys.exit(-1)
